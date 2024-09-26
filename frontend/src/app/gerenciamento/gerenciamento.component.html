@@ -1,0 +1,42 @@
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+  
+    <!-- Id Column -->
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef> Id. </th>
+      <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+    </ng-container>
+  
+    <!-- Nome Column -->
+    <ng-container matColumnDef="nome">
+      <th mat-header-cell *matHeaderCellDef> Nome </th>
+      <td mat-cell *matCellDef="let element"> {{element.nome}} </td>
+    </ng-container>
+  
+    <!-- Maximo Pessoas Column -->
+    <ng-container matColumnDef="max_pessoas">
+      <th mat-header-cell *matHeaderCellDef> Max Pessoas </th>
+      <td mat-cell *matCellDef="let element"> {{element.max_pessoas}} </td>
+    </ng-container>
+  
+    <!-- Excluir Column -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef> Excluir </th>
+      <td mat-cell *matCellDef="let element">
+        <button mat-icon-button (click)="openDeleteDialog(element.id, element.nome)">
+            <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+  
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>  
+
+
+
+  <button class="FAB" (click)="openAddDialog()"  mat-fab aria-label="Adicionar Sala">
+    <mat-icon>add</mat-icon>
+  </button>
