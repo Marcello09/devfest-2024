@@ -19,9 +19,26 @@ admin.initializeApp();
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
 
+const listSalas = (request: any, response: any) => {
+  getFirestore().collection("salas")
+    .get()
+    .then(query => {
+      return query.docs.map(doc => {
+        return {
+          id: doc.id,
+          ...doc.data()
+        }
+      })
+    })
+    .then((res) => {
+      response.send(res);
+    }).catch((err) => {
+      response.status(400).send(`Erro ao listar salas: ${err}`);
+    });
+};
 
 const createSala = (request: any, response: any) => {
-  const {nome, maxPessoas} = request.query;
+  const {nome, max_pessoas: maxPessoas} = request.query;
   getFirestore().collection("salas")
     .add({
       nome,
@@ -107,6 +124,7 @@ const esvaziaSala = (request:any, response:any) => {
 };
 
 
+app.get("/sala", listSalas);
 app.post("/sala", createSala);
 app.delete("/sala/:sala_id", deleteSala);
 
