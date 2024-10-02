@@ -6,7 +6,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { EsvaziarDialogComponent } from './dialogs/esvaziar-dialog/esvaziar-dialog.component';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { ApiService } from '../api.service';
 
 @Component({
   selector: 'app-sala',
@@ -18,38 +19,32 @@ import { RouterModule } from '@angular/router';
 export class SalasComponent {
   readonly dialog = inject(MatDialog)
 
-  items: any[] = [
-    {
-      nome: 'Sala 1',
-      id: 1,
-      max_pessoas: 10,
-      pessoas: 5
-    },
-    {
-      nome: 'Sala 2',
-      id: 2,
-      max_pessoas: 200,
-      pessoas: 87
-    },
-    {
-      nome: 'Sala 3',
-      id: 3,
-      max_pessoas: 50,
-      pessoas: 44
-    }
-  ];
+  salas: any[] = [];
 
-  scan(id: any) {
-
+  constructor(
+    private api: ApiService,
+  ) {
+    this.carregaSalas()
+  }
+  
+  private carregaSalas() {
+    this.api.listarSalas().subscribe((salas: any) => {
+      this.salas = salas;
+    });
   }
 
-  removeOne(id: any) {
-
+  removeOne(id: string) {
+    this.api.removerPessoa(id).subscribe(() => {
+      this.carregaSalas();
+    });
   }
 
-  removeAll(id: any) {
-    this.dialog.open(EsvaziarDialogComponent);
-
+  removeAll(id: string) {
+    this.dialog.open(EsvaziarDialogComponent, {
+      data: { id }
+    }).afterClosed().subscribe(() => {
+      this.carregaSalas();
+    });
   }
 
 }

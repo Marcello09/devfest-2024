@@ -1,12 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { of } from 'rxjs';
+import { environment } from '../environments/environment';
 
-const HOST = 'http://127.0.0.1:5001/moreira-devfest-2024/us-central1/api'
+const HOST = environment.API_HOST
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
+
+  leituras: any = {}
 
   constructor(private http: HttpClient) { }
 
@@ -19,11 +23,25 @@ export class ApiService {
   }
 
   deletarSala(id: string) {
-    return this.http.delete(HOST + '/sala/' + id)
+    return this.http.delete(HOST + '/sala/' + id, {observe: 'body'})
   }
 
-  addPessoaOnce(sala: string, pessoa: string) {
-    console.log('Not Implemented Yet!')
+  esvaziarSala(sala_id: string) {
+    return this.http.delete(`${HOST}/sala/${sala_id}/esvaziar`)
+  }
+
+  removerPessoa(sala_id: string) {
+    return this.http.delete(`${HOST}/sala/${sala_id}/pessoa`)
+  }
+  
+  adicionarPessoaUmaVez(sala: string, pessoa_id: string) {
+    if (!this.leituras[pessoa_id]) {
+      console.log(`Adiciona ${pessoa_id} em ${sala}`)
+      this.leituras[pessoa_id] = true;
+      return this.http.put(`${HOST}/sala/${sala}/pessoa?pessoa_id=${pessoa_id}`, {})
+    } else {
+      return of()
+    }
   }
 
 }

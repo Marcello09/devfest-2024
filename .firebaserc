@@ -1,5 +1,16 @@
 {
   "projects": {
     "default": "moreira-devfest-2024"
-  }
+  },
+  "targets": {
+    "moreira-devfest-2024": {
+      "database": {
+        "main": [
+          "devfest"
+        ]
+      }
+    }
+  },
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
 }

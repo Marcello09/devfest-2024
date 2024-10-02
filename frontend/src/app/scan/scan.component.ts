@@ -1,6 +1,7 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
 import { NgxScannerQrcodeModule, LOAD_WASM, NgxScannerQrcodeService, NgxScannerQrcodeComponent, ScannerQRCodeResult, ScannerQRCodeConfig } from 'ngx-scanner-qrcode';
 import { ApiService } from '../api.service';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 // Necessary to solve the problem of losing internet connection
 LOAD_WASM().subscribe();
@@ -8,11 +9,11 @@ LOAD_WASM().subscribe();
 @Component({
   selector: 'app-scan',
   standalone: true,
-  imports: [NgxScannerQrcodeModule],
+  imports: [NgxScannerQrcodeModule, RouterModule],
   templateUrl: './scan.component.html',
   styleUrl: './scan.component.scss'
 })
-export class ScanComponent implements AfterViewInit {
+export class ScanComponent implements AfterViewInit, OnDestroy {
   @ViewChild('scanner') scanner!: NgxScannerQrcodeComponent;
   config: ScannerQRCodeConfig = {
     constraints: {
@@ -23,8 +24,14 @@ export class ScanComponent implements AfterViewInit {
   }
   sala = ''
 
-  constructor(private qrcode: NgxScannerQrcodeService, private api: ApiService) {
-
+  constructor(
+    private qrcode: NgxScannerQrcodeService, 
+    private api: ApiService,
+    private activatedRoute: ActivatedRoute,
+  ) {
+    this.api.leituras = {}
+    this.activatedRoute.snapshot.params['id'] ? 
+      this.sala = this.activatedRoute.snapshot.params['id'] : this.sala = ''
   }
 
   ngAfterViewInit(): void {
@@ -33,6 +40,10 @@ export class ScanComponent implements AfterViewInit {
         this.start()
       })
     }
+  }
+
+  ngOnDestroy(): void {
+    this.scanner.stop();
   }
 
   start() {
@@ -46,7 +57,7 @@ export class ScanComponent implements AfterViewInit {
 
   onRead(evento: ScannerQRCodeResult[]) {
     evento.forEach(leitura => {
-      this.api.addPessoaOnce(this.sala, leitura.value)
+      this.api.adicionarPessoaUmaVez(this.sala, leitura.value).subscribe(() => {})
     })
   }
 }
