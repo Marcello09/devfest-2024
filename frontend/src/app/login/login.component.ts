@@ -57,6 +57,7 @@ export class LoginComponent implements AfterViewInit {
       ],
       signInFlow: 'popup',
       signInSuccessUrl: 'home',
+      credentialHelper: firebaseui.auth.CredentialHelper.GOOGLE_YOLO
     });
   }
 
