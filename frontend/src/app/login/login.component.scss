@@ -1,0 +1,30 @@
+@use '@angular/material' as mat;
+
+:host {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 0 1rem;
+
+    mat-card {
+        width: 100%;
+
+        @include mat.elevation-transition();
+        @include mat.elevation(4);
+
+    }
+}
+
+@media (min-width: 600px) {
+
+    :host {
+        padding: 0;
+    }
+    
+    mat-card {
+        width: auto;
+        max-width: 400px;
+        box-sizing: border-box;
+    }
+}
