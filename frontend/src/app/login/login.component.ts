@@ -40,12 +40,6 @@ export class LoginComponent implements AfterViewInit {
   }
 
   constructor(private router: Router) {
-    getRedirectResult(getAuth()).then((result) => {
-      console.log(result)
-      if (result) {
-        this.router.navigate(['/home']);
-      }
-    });
   }
   
   ngAfterViewInit(): void {
@@ -57,7 +51,22 @@ export class LoginComponent implements AfterViewInit {
       ],
       signInFlow: 'popup',
       signInSuccessUrl: 'home',
-      credentialHelper: firebaseui.auth.CredentialHelper.GOOGLE_YOLO
+      credentialHelper: firebaseui.auth.CredentialHelper.GOOGLE_YOLO,
+      callbacks: {
+        signInSuccessWithAuthResult: function(authResult: any, redirectUrl: any) {
+          // User successfully signed in.
+          // Return type determines whether we continue the redirect automatically
+          // or whether we leave that to developer to handle.
+          console.log('Sign in success');
+          console.log(authResult.user);
+          return true;
+        },
+        signInFailure: function(error: any) {
+          // Some error occurred, you can inspect the error.code
+          // Check error.code and handle the error
+          console.log('Sign in failure');
+        }
+      }
     });
   }
 
