@@ -1,7 +1,8 @@
-import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, inject, OnDestroy, ViewChild } from '@angular/core';
 import { NgxScannerQrcodeModule, LOAD_WASM, NgxScannerQrcodeService, NgxScannerQrcodeComponent, ScannerQRCodeResult, ScannerQRCodeConfig } from 'ngx-scanner-qrcode';
 import { ApiService } from '../api.service';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 // Necessary to solve the problem of losing internet connection
 LOAD_WASM().subscribe();
@@ -14,6 +15,8 @@ LOAD_WASM().subscribe();
   styleUrl: './scan.component.scss'
 })
 export class ScanComponent implements AfterViewInit, OnDestroy {
+  private _snackbar = inject(MatSnackBar);
+
   @ViewChild('scanner') scanner!: NgxScannerQrcodeComponent;
   config: ScannerQRCodeConfig = {
     constraints: {
@@ -57,7 +60,11 @@ export class ScanComponent implements AfterViewInit, OnDestroy {
 
   onRead(evento: ScannerQRCodeResult[]) {
     evento.forEach(leitura => {
-      this.api.adicionarPessoaUmaVez(this.sala, leitura.value).subscribe(() => {})
+      this.api.adicionarPessoaUmaVez(this.sala, leitura.value).subscribe({
+        error: (err) => {
+          this._snackbar.open(`Sala Cheia!!`,'', {duration: 5000})
+        }
+      })
     })
   }
 }

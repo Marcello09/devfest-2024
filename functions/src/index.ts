@@ -70,25 +70,32 @@ const deleteSala = (request: express.Request, response: express.Response) => {
   }
 };
 
-const inserePessoa = (request: express.Request, response: express.Response) => {
+const inserePessoa = async (
+  request: express.Request, response: express.Response) => {
   let {sala_id: salaId} = request.params;
   let {pessoa_id: pessoaId} = request.query;
   if (salaId && pessoaId) {
     salaId = salaId.toString();
     pessoaId = pessoaId.toString();
-
-    getFirestore("devfest").collection("salas").doc(salaId).update({
-      pessoas: FieldValue.increment(1),
-    }).then(() => {
-      getFirestore("devfest").collection("logs").add({
-        sala_id: salaId,
-        pessoa_id: pessoaId,
-        timestamp: Timestamp.now(),
+    const docRef = getFirestore("devfest").collection("salas").doc(salaId);
+    try {
+      getFirestore("devfest").runTransaction(async (transaction) => {
+        const doc = await transaction.get(docRef);
+        const newPessoas = doc.data()?.pessoas + 1;
+        if (newPessoas > doc.data()?.max_pessoas) {
+          throw new Error("Sala cheia!");
+        }
+        await transaction.update(docRef, {pessoas: newPessoas});
+        getFirestore("devfest").collection("logs").add({
+          sala_id: salaId,
+          pessoa_id: pessoaId,
+          timestamp: Timestamp.now(),
+        });
+        response.send({message: "Pessoa adicionada com sucesso!"});
       });
-      response.send({message: "Pessoa adicionada com sucesso!"});
-    }).catch((err) => {
-      response.status(400).send({error: `Erro ao adicionar pessoa: ${err}`});
-    });
+    } catch (err) {
+      response.status(400).send({error: "Sala Cheia!"});
+    }
   } else {
     response.status(400).send({error: "ID da sala ou pessoa não informado."});
   }

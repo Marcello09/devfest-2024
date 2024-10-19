@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import * as firebaseui from 'firebaseui';
 import { EmailAuthProvider, GoogleAuthProvider } from 'firebase/auth';
 import { AuthService } from '../auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -30,7 +31,7 @@ export class LoginComponent implements AfterViewInit {
 
   hide = true;
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private router: Router) { }
 
   onGoogleSignIn = function (googleUser: any) {
     // Handle the Google One Tap sign-in response
@@ -46,6 +47,7 @@ export class LoginComponent implements AfterViewInit {
     const ui = new firebaseui.auth.AuthUI(this.authService.getFirebaseAuth());
 
     const signInCallback = (authResult: any, redirectUrl: any): boolean => {
+      this.router.navigate(['home']);
       return false;
     }
 
