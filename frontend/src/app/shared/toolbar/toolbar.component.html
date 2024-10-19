@@ -1,8 +1,11 @@
 <mat-toolbar>
-    <button routerLink="../" mat-icon-button class="example-icon" aria-label="Go back a page">
+    <button (click)="goBack()" mat-icon-button class="example-icon" aria-label="Go back a page">
       <mat-icon>arrow_back</mat-icon>
     </button>
     <span>Devfest 2024</span>
     <span class="example-spacer"></span>
+    <button routerLink="/login" mat-button aria-label="Sou Organizador">
+      Sou Organizador
+    </button>
   </mat-toolbar>
   
