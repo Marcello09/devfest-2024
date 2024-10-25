@@ -33,11 +33,16 @@ export class ApiService {
   removerPessoa(sala_id: string) {
     return this.http.delete(`${HOST}/sala/${sala_id}/pessoa`)
   }
+
+  removerPessoas(id: any, quantidade: number) {
+    return this.http.delete(`${HOST}/sala/${id}/pessoa?quantidade=${quantidade}`)
+  }
   
   adicionarPessoaUmaVez(sala: string, pessoa_id: string) {
     if (!this.leituras[pessoa_id]) {
       console.log(`Adiciona ${pessoa_id} em ${sala}`)
-      this.leituras[pessoa_id] = true;
+      if (pessoa_id !== "")
+        this.leituras[pessoa_id] = true;
       return this.http.put(`${HOST}/sala/${sala}/pessoa?pessoa_id=${pessoa_id}`, {})
     } else {
       return of()

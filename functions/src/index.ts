@@ -8,7 +8,7 @@
  */
 
 import {onRequest} from "firebase-functions/v2/https";
-import {FieldValue, getFirestore, Timestamp} from "firebase-admin/firestore";
+import {getFirestore, Timestamp} from "firebase-admin/firestore";
 import * as admin from "firebase-admin";
 
 import * as express from "express";
@@ -74,6 +74,9 @@ const inserePessoa = async (
   request: express.Request, response: express.Response) => {
   let {sala_id: salaId} = request.params;
   let {pessoa_id: pessoaId} = request.query;
+  if (!pessoaId) {
+    pessoaId = "Sem QR Code";
+  }
   if (salaId && pessoaId) {
     salaId = salaId.toString();
     pessoaId = pessoaId.toString();
@@ -97,21 +100,30 @@ const inserePessoa = async (
       response.status(400).send({error: "Sala Cheia!"});
     }
   } else {
-    response.status(400).send({error: "ID da sala ou pessoa não informado."});
+    response.status(400).send({error: "ID da sala não informado."});
   }
 };
 
 const removePessoa = (request: express.Request, response: express.Response) => {
   let {sala_id: salaId} = request.params;
+  const {quantidade} = request.query;
   if (salaId) {
     salaId = salaId.toString();
-    getFirestore("devfest").collection("salas").doc(salaId).update({
-      pessoas: FieldValue.increment(-1),
-    }).then(() => {
-      response.send({message: "Pessoa removida com sucesso!"});
-    }).catch((err) => {
-      response.status(400).send({error: `Erro ao remover pessoa: ${err}`});
-    });
+    const removeQuantity = quantidade ? parseInt(quantidade.toString(), 10) : 1;
+    try {
+      getFirestore("devfest").runTransaction(async (transaction) => {
+        const docRef = getFirestore("devfest").collection("salas").doc(salaId);
+        const doc = await transaction.get(docRef);
+        let newPessoas = doc.data()?.pessoas - removeQuantity;
+        if (newPessoas < 0) {
+          newPessoas = 0;
+        }
+        await transaction.update(docRef, {pessoas: newPessoas});
+        response.send({message: "Pessoa removida com sucesso!"});
+      });
+    } catch (err) {
+      response.status(500).send({error: `Erro ao remover pessoa: ${err}`});
+    }
   } else {
     response.status(400).send({error: "ID da sala ou pessoa não informado."});
   }

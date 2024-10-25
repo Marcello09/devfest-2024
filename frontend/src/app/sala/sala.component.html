@@ -8,7 +8,9 @@
             <div class="progress-text">{{ sala.pessoas }} / {{ sala.max_pessoas }}</div>
         </mat-card-content>
         <mat-card-actions align="end">
-            <button mat-button (click)="removeOne(sala.id)">Remover Um</button>
+            <button mat-icon-button (click)="addOne(sala.id)"><mat-icon>person_add</mat-icon></button>
+            <button mat-icon-button (click)="removeOne(sala.id)"><mat-icon>person_remove</mat-icon></button>
+            <button mat-button (click)="removeMany(sala.id)">Remover Vários</button>
             <button mat-button (click)="removeAll(sala.id)">Esvaziar Sala</button>
             <button mat-button routerLink="scan" [routerLink]="[sala.id,'scan']">Escanear</button>
         </mat-card-actions>

@@ -1,8 +1,20 @@
 <h2 mat-dialog-title>Esvaziar Sala</h2>
 <mat-dialog-content>
-  Tem certeza que deseja esvaziar a sala?
+  @if (data.many) {
+    Quantas pessoas quer tirar da sala?
+    <mat-form-field>
+      <input matInput type="number" [(ngModel)]="quantidade" required>
+    </mat-form-field>
+  } @else {
+    Tem certeza que deseja esvaziar a sala?
+  }
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button mat-button mat-dialog-close>Não</button>
-  <button mat-button cdkFocusInitial (click)="delete()" >Sim</button>
+  @if (data.many) {
+    <button mat-button mat-dialog-close>Cancelar</button>
+    <button mat-button cdkFocusInitial (click)="removeMany()" [disabled]="quantidade <= 0">Esvaziar</button>
+  } @else {
+    <button mat-button mat-dialog-close>Não</button>
+    <button mat-button cdkFocusInitial (click)="delete()">Sim</button>
+  }
 </mat-dialog-actions>

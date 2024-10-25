@@ -33,8 +33,24 @@ export class SalasComponent {
     });
   }
 
+  addOne(id: string) {
+    this.api.adicionarPessoaUmaVez(id,"").subscribe(() => {
+      navigator.vibrate(200)
+      this.carregaSalas();
+    });
+  }
+
   removeOne(id: string) {
     this.api.removerPessoa(id).subscribe(() => {
+      navigator.vibrate(200)
+      this.carregaSalas();
+    });
+  }
+
+  removeMany(id: string) {
+    this.dialog.open(EsvaziarDialogComponent, {
+      data: { id, many: true }
+    }).afterClosed().subscribe(() => {
       this.carregaSalas();
     });
   }
